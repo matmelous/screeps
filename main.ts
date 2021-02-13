@@ -1,21 +1,16 @@
 import { ErrorMapper } from "utils/ErrorMapper";
-import roleHarvester from './modules/harvester';
-import roleUpgrader from './modules/upgrader';
-import roleBuilder from './modules/builder';
+import roleHarvester from './modules/workers/harvester';
+import roleUpgrader from './modules/workers/upgrader';
+import roleBuilder from './modules/workers/builder';
 import roleSpawner from './modules/spawner';
+import {init} from './modules/workers/management';
 
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
 export const loop = ErrorMapper.wrapLoop(() => {
-    console.log(`Current  tick is ${Game.time}`);
 
-    // Automatically delete memory of missing creeps
-    for (const name in Memory.creeps) {
-        if (!(name in Game.creeps)) {
-            delete Memory.creeps[name];
-        }
-    }
+    init();
 
     roleSpawner.run();
 

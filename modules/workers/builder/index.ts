@@ -1,4 +1,5 @@
-import { randomName, workerLevels } from "../helpers";
+import { creepsAmount } from "configurations";
+import { randomName, workerLevels } from "../../helpers";
 
 const  roleBuilder = {
 
@@ -46,10 +47,14 @@ export const  getNumberOfBuilders = () =>{
 export const  createBuilder = (spawn,level)=>{
     const levels = workerLevels;
 
-    var newName = randomName('builder-');
+    Memory.creepsCount.workers.count++;
+    Memory.creepsCount.workers.builders.count++;
+
+    const numberOfHarvesters = Memory.creepsCount.workers.builders.count;
+    var newName = 'builder-' + numberOfHarvesters;
     console.log('Spawning new builder: ' + newName);
     spawn.spawnCreep(levels[level], newName,
-                {memory: {role: 'builder', level: level}});
+        { memory: { role: 'builder', category: 'worker', level: level}});
 }
 
 export const  watchBuilders = (spawn,level)=>{
@@ -63,5 +68,32 @@ export const  watchBuilders = (spawn,level)=>{
         }
     }
 }
+
+
+const setBuildersLimit = (newLimit) => {
+    Memory.creepsCount.workers.builders.limit = newLimit;
+}
+
+const calculateBuildersLimit = () => {
+    const limit = Math.floor(Memory.creepsCount.workers.limit * creepsAmount.builders);
+    return limit < 1 ? 0 : limit;
+}
+
+const updateBuildersLimit = () => {
+    setBuildersLimit(calculateBuildersLimit());
+}
+
+const maintainBuilders = (spawn) => {
+    const numberOfBuilders = Memory.creepsCount.workers.count;
+    const limitOfBuilders = Memory.creepsCount.workers.limit;
+    if (numberOfBuilders < limitOfBuilders) {
+        createBuilder(spawn, 0);
+    }
+}
+export const manageBuilders = (spawn) => {
+    updateBuildersLimit();
+    maintainBuilders(spawn);
+}
+
 
 export default roleBuilder;
