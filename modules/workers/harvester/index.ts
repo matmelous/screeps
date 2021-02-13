@@ -1,5 +1,6 @@
 
-import {randomName, workerLevels}  from '../helpers/';
+import { creepsAmount } from 'configurations';
+import {randomName, workerLevels}  from '../../helpers/';
 
 const roleHarvester = {
 
@@ -43,23 +44,40 @@ export const  getNumberOfHarvesters = () =>{
 
 export const  createHarvester = (spawn,level)=>{
     const levels = workerLevels;
-
-    var newName = randomName('harvester-');
+    const numberOfHarvesters=Memory.creepsCount.workers.harvesters.count;
+    var newName = 'harvester-' + numberOfHarvesters;
     console.log('Spawning new harvester: ' + newName);
+    Memory.creepsCount.workers.count++;
+    Memory.creepsCount.workers.harvesters.count++;
     spawn.spawnCreep(levels[level], newName,
-                {memory: {role: 'harvester', level: level}});
+        { memory: { role: 'harvester', category: 'worker', level: level}});
 }
 
-export const  watchHarvesters = (spawn,level)=>{
+const setHarverstersLimit = (newLimit) => {
+    Memory.creepsCount.workers.harvesters.limit = newLimit;
+}
 
-    if(spawn.spawning==null){
-        if(getNumberOfHarvesters()<3){
+const calculateHarvestersLimit = () => {
+    const limit = Math.floor(Memory.creepsCount.workers.limit * creepsAmount.harvesters);
+    return limit < 1 ? 1 : limit;
+}
 
-            if(spawn.store.getUsedCapacity(RESOURCE_ENERGY)>200){
-                createHarvester(spawn,level)
-            }
-        }
+const updateHarvestersLimit = () => {
+    setHarverstersLimit(calculateHarvestersLimit());
+}
+
+const maintainHarvesters = (spawn) => {
+    const numberOfHarvesters = Memory.creepsCount.workers.count;
+    const limitOfHarvesters = Memory.creepsCount.workers.limit;
+    if (numberOfHarvesters < limitOfHarvesters) {
+        createHarvester(spawn, 0);
     }
 }
+
+export const manageHarvesters = (spawn) => {
+    updateHarvestersLimit();
+    maintainHarvesters(spawn);
+}
+
 
 export default roleHarvester;
