@@ -1,5 +1,5 @@
 
-import {randomName, workerLevels}  from '../helpers/helper';
+import {randomName, workerLevels}  from '../helpers/';
 
 const roleHarvester = {
 

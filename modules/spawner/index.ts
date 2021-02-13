@@ -1,7 +1,7 @@
 
-import {clearMemory} from '../helpers/helper';
-import {watchHarvesters} from '../harvester/role.harvester';
-import {watchBuilders} from '../builder/role.builder';
+import {clearMemory} from '../helpers/';
+import {watchHarvesters} from '../harvester/';
+import {watchBuilders} from '../builder/';
 
 
 export const  loopSpawns= (spawn) => {

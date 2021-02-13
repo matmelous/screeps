@@ -1,4 +1,4 @@
-import { randomName, workerLevels } from "modules/helpers/helper";
+import { randomName, workerLevels } from "../helpers";
 
 const  roleBuilder = {
 
